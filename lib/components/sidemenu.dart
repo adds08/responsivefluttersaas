@@ -11,7 +11,7 @@ class SideMenu extends ConsumerWidget {
         children: [
           Icon(icon),
           const SizedBox(
-            height: 8,
+            height: 6,
           ),
           Text(
             text,
