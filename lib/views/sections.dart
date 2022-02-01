@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:mapnpospoc/constants.dart';
 
 class SectionLeft extends StatefulWidget {
   const SectionLeft({Key? key}) : super(key: key);
@@ -33,7 +34,7 @@ class _SectionLeftState extends State<SectionLeft> {
         children: [
           Card(
             color: Colors.orange,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            shape: RoundedRectangleBorder(borderRadius: appBorderRadius),
             child: Padding(
               padding: const EdgeInsets.all(22.0),
               child: Column(
@@ -135,14 +136,14 @@ class _SectionLeftState extends State<SectionLeft> {
                     SizedBox(
                       width: 120,
                       child: Container(
-                        decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(4)),
+                        decoration: BoxDecoration(color: Colors.white54, borderRadius: appBorderRadius),
                         padding: EdgeInsets.all(4),
                         child: DropdownButton(
                           value: selectedValue,
                           underline: Container(),
                           isExpanded: true,
                           isDense: true,
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: appBorderRadius,
                           hint: Text("Select"),
                           items: dropdownList.map((element) {
                             return DropdownMenuItem<String>(value: element["value"], child: Text(element["text"].toString()));

@@ -38,6 +38,8 @@ dependencies:
   hive:
   hive_flutter:
   uuid: ^3.0.5
+  flutter_svg:
+  adobe_xd: ^2.0.0+1
 
 dev_dependencies:
   flutter_test:

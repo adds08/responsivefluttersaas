@@ -1,7 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mapnpospoc/models/users.model.dart';
+import 'package:mapnpospoc/constants.dart';
+import 'package:mapnpospoc/models/user.model.dart';
 import 'package:mapnpospoc/notifier/data.notifier.dart';
 import 'package:mapnpospoc/notifier/view.notifier.dart';
 
@@ -50,11 +51,11 @@ class AddUser extends ConsumerWidget {
       filled: true,
       enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(color: Colors.transparent),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: appBorderRadius,
       ),
       focusedBorder: OutlineInputBorder(
         borderSide: BorderSide(color: Colors.transparent),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: appBorderRadius,
       ),
       contentPadding: EdgeInsets.all(10));
 
@@ -67,7 +68,7 @@ class AddUser extends ConsumerWidget {
     return Card(
         elevation: 12,
         color: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        shape: RoundedRectangleBorder(borderRadius: appBorderRadius),
         child: Padding(
           padding: const EdgeInsets.all(18.0),
           child: Column(
@@ -135,7 +136,7 @@ class AddUser extends ConsumerWidget {
                           if (gender.isNotEmpty && name.isNotEmpty && age > 0) {
                             User newUser =
                                 User(name: _controllerName.text, age: int.parse(_controllerAge.text), gender: _controllerGender.text);
-                            ref.read(DataNotifier.userDataNotifier.notifier).addUsers(newUser);
+                            ref.read(DataNotifier.userDataNotifier.notifier).addUser(newUser);
                           }
                           _controllerName.clear();
                           _controllerAge.clear();
@@ -175,7 +176,7 @@ class UsersList extends ConsumerWidget {
       dataCells.add(DataCell(Text(element.gender)));
       dataCells.add(DataCell(IconButton(
         onPressed: () {
-          userProvider.removeUsers(i);
+          userProvider.removeUser(i);
         },
         icon: Icon(Icons.delete),
         color: Colors.redAccent,
@@ -185,7 +186,7 @@ class UsersList extends ConsumerWidget {
 
     return Card(
       color: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      shape: RoundedRectangleBorder(borderRadius: appBorderRadius),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

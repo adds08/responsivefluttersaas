@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:mapnpospoc/components/sections.dart';
 import 'package:mapnpospoc/components_custom/responsive_container.dart';
+import 'package:mapnpospoc/views/sections.dart';
 
 class DasboardView extends StatelessWidget {
   const DasboardView({Key? key}) : super(key: key);

@@ -67,15 +67,12 @@ class _MapWidgetState extends State<MapWidget> {
                           print("Latitude : ${e.latitude}");
                           print("Longitude : ${e.longitude}");
                         },
-                        child: Container(
-                          child: FlutterLogo(),
-                        ),
+                        child: const FlutterLogo(),
                       ),
                     );
                   }).toList(),
                   // markers: [
                   //   // Marker(width: 80.0, height: 80.0, point: LatLng(27.70, 85.3), builder: (ctx) => Text("Apek is here")),
-
                   // ],
                 ),
               ],

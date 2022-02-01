@@ -48,7 +48,7 @@ class FoodItem {
   FoodItem(this.name, this.picture, this.price, this.category);
 }
 
-List<Map<String, List>> maps_mock = [
+List<Map<String, List>> mapsmock = [
   {
     "hotdish": ["Soup", "Cereal", "Vegetable Soup", "Tea"]
   },
@@ -74,7 +74,7 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     super.initState();
     menuIndex = 0;
-    print(maps_mock[menuIndex].values.first.length);
+    // print(mapsmock[menuIndex].values.first.length);
   }
 
   @override
@@ -94,15 +94,15 @@ class _MainAppState extends State<MainApp> {
                       padding: EdgeInsets.all(16.0),
                       color: Colors.pink,
                       child: ListView.builder(
-                        itemCount: maps_mock[menuIndex].values.first.length,
+                        itemCount: mapsmock[menuIndex].values.first.length,
                         itemBuilder: (context, index) {
                           return ListTile(
                             onTap: () {
                               setState(() {
-                                selectedFood.add(maps_mock[menuIndex].values.first[index]);
+                                selectedFood.add(mapsmock[menuIndex].values.first[index]);
                               });
                             },
-                            title: Text("${maps_mock[menuIndex].values.first[index]}"),
+                            title: Text("${mapsmock[menuIndex].values.first[index]}"),
                           );
                         },
                       ),
@@ -115,7 +115,7 @@ class _MainAppState extends State<MainApp> {
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         padding: EdgeInsets.symmetric(horizontal: 32),
-                        itemCount: maps_mock.length,
+                        itemCount: mapsmock.length,
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -127,7 +127,7 @@ class _MainAppState extends State<MainApp> {
                                 });
                               },
                               child: Text(
-                                maps_mock[index].keys.first.toString().toUpperCase(),
+                                mapsmock[index].keys.first.toString().toUpperCase(),
                                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
                             ),

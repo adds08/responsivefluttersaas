@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:mapnpospoc/models/users.model.dart';
+import 'package:mapnpospoc/models/user.model.dart';
 
 class UserProvider extends ChangeNotifier {
   late List<User> _users;
@@ -9,7 +9,7 @@ class UserProvider extends ChangeNotifier {
     _users = [];
   }
 
-  get users => _users;
+  List<User> get users => _users;
 
   void getUsers() async {
     var box = await Hive.openBox<User>('user');
@@ -17,13 +17,13 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addUsers(User newUser) async {
+  void addUser(User newUser) async {
     var box = await Hive.openBox<User>('user');
     box.add(newUser);
     notifyListeners();
   }
 
-  void removeUsers(int index) async {
+  void removeUser(int index) async {
     var box = await Hive.openBox<User>('user');
     box.deleteAt(index);
     notifyListeners();

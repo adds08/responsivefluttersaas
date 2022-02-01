@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 
-part 'users.model.g.dart';
+part 'user.model.g.dart';
 
 @HiveType(typeId: 0)
 class User {

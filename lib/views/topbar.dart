@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapnpospoc/components_custom/custom_dropdown.dart';
 import 'package:mapnpospoc/components_custom/responsive_container.dart';
+import 'package:mapnpospoc/constants.dart';
 
 enum ServerStatus { connecting, online, offline, error }
 
@@ -39,21 +40,25 @@ class TopbarMobile extends StatelessWidget {
                   },
                   icon: Icon(Icons.menu)),
               Flexible(
-                child: TextField(
-                  decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.search),
-                      hintText: "Search",
-                      filled: true,
-                      fillColor: Colors.white54,
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(vertical: 10)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: TextField(
+                    decoration: InputDecoration(
+                        isDense: true,
+                        prefixIcon: Icon(Icons.search),
+                        hintText: "Search",
+                        filled: true,
+                        fillColor: Colors.white54,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.transparent),
+                          borderRadius: appBorderRadius,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.transparent),
+                          borderRadius: appBorderRadius,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(vertical: 10)),
+                  ),
                 ),
               ),
               WebServerStatusIcon(),
@@ -93,55 +98,58 @@ class TopbarDesktop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.max,
         children: [
           Flexible(
             child: TextField(
               decoration: InputDecoration(
+                  isDense: true,
                   prefixIcon: Icon(Icons.search),
                   hintText: "Search",
                   filled: true,
                   fillColor: Colors.white54,
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.transparent),
-                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey),
+                    borderRadius: appBorderRadius,
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.transparent),
-                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey),
+                    borderRadius: appBorderRadius,
                   ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 10)),
+                  contentPadding: EdgeInsets.symmetric(vertical: 4)),
             ),
           ),
-          Row(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: IconButton(onPressed: () {}, icon: Icon(Icons.ac_unit_rounded)),
-              ),
-              WebServerStatusIcon(),
-              Padding(
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: IconButton(onPressed: () {}, icon: Icon(Icons.notification_add_rounded))),
-              CustomDropdown(
-                  children: [
-                    ListTile(
-                      title: Text("hi"),
-                    )
-                  ],
-                  child: Row(
+                  child: IconButton(onPressed: () {}, icon: Icon(Icons.ac_unit_rounded)),
+                ),
+                WebServerStatusIcon(),
+                Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: IconButton(onPressed: () {}, icon: Icon(Icons.notification_add_rounded))),
+                CustomDropdown(
                     children: [
-                      Icon(Icons.child_care_sharp),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      Text("Atish"),
+                      ListTile(
+                        title: Text("hi"),
+                      )
                     ],
-                  ))
-            ],
+                    child: Row(
+                      children: [
+                        Icon(Icons.child_care_sharp),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text("Atish"),
+                      ],
+                    ))
+              ],
+            ),
           )
         ],
       ),
