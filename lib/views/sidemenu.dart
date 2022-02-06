@@ -31,7 +31,7 @@ class SideMenu extends ConsumerWidget {
   //       horizontalTitleGap: 0,
   //     )
 
-  List<Widget> widgetList(ref) {
+  List<Widget> widgetList(ref, context) {
     List<Widget> widgetsList = [];
 
     for (int i = 0; i < SideMenuViewModel().menuitems.length; i++) {
@@ -45,6 +45,9 @@ class SideMenu extends ConsumerWidget {
             padding: MaterialStateProperty.all(const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20))),
         onPressed: () {
           ref.read(sideMenuProvider.notifier).changeIndex = i;
+          if (Scaffold.of(context).hasDrawer && Scaffold.of(context).isDrawerOpen) {
+            Navigator.of(context).pop();
+          }
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -68,7 +71,7 @@ class SideMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final widgetList = this.widgetList(ref);
+    final widgetList = this.widgetList(ref, context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(

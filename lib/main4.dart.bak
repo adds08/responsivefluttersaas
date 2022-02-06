@@ -1,0 +1,504 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
+import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MaterialApp(
+    home: Scaffold(body: HorizontalExample()),
+    // home: Scaffold(body: ExpansionTileExample()),
+    // home: Scaffold(body: DragHandleExample()),
+  ));
+}
+
+class DragHandleExample extends StatefulWidget {
+  DragHandleExample({Key? key}) : super(key: key);
+
+  @override
+  _DragHandleExample createState() => _DragHandleExample();
+}
+
+class _DragHandleExample extends State<DragHandleExample> {
+  late List<DragAndDropList> _contents;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _contents = List.generate(4, (index) {
+      return DragAndDropList(
+        header: Column(
+          children: <Widget>[
+            Row(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 8, bottom: 4),
+                  child: Text(
+                    'Header $index',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        children: <DragAndDropItem>[
+          DragAndDropItem(
+            child: Row(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  child: Text(
+                    'Sub $index.1',
+                  ),
+                ),
+              ],
+            ),
+          ),
+          DragAndDropItem(
+            child: Row(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  child: Text(
+                    'Sub $index.2',
+                  ),
+                ),
+              ],
+            ),
+          ),
+          DragAndDropItem(
+            child: Row(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  child: Text(
+                    'Sub $index.3',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var backgroundColor = Color.fromARGB(255, 243, 242, 248);
+
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      appBar: AppBar(
+        title: Text('Drag Handle'),
+      ),
+      body: DragAndDropLists(
+        children: _contents,
+        onItemReorder: _onItemReorder,
+        onListReorder: _onListReorder,
+        listPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        itemDivider: Divider(
+          thickness: 2,
+          height: 2,
+          color: backgroundColor,
+        ),
+        itemDecorationWhileDragging: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 3,
+              offset: Offset(0, 0), // changes position of shadow
+            ),
+          ],
+        ),
+        listInnerDecoration: BoxDecoration(
+          color: Theme.of(context).canvasColor,
+          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+        ),
+        lastItemTargetHeight: 8,
+        addLastItemTargetHeightToTop: true,
+        lastListTargetSize: 40,
+        listDragHandle: DragHandle(
+          verticalAlignment: DragHandleVerticalAlignment.top,
+          child: Padding(
+            padding: EdgeInsets.only(right: 10),
+            child: Icon(
+              Icons.menu,
+              color: Colors.black26,
+            ),
+          ),
+        ),
+        itemDragHandle: DragHandle(
+          child: Padding(
+            padding: EdgeInsets.only(right: 10),
+            child: Icon(
+              Icons.menu,
+              color: Colors.blueGrey,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  _onItemReorder(int oldItemIndex, int oldListIndex, int newItemIndex, int newListIndex) {
+    setState(() {
+      var movedItem = _contents[oldListIndex].children.removeAt(oldItemIndex);
+      _contents[newListIndex].children.insert(newItemIndex, movedItem);
+    });
+  }
+
+  _onListReorder(int oldListIndex, int newListIndex) {
+    setState(() {
+      var movedList = _contents.removeAt(oldListIndex);
+      _contents.insert(newListIndex, movedList);
+    });
+  }
+}
+
+class SliverExample extends StatefulWidget {
+  SliverExample({Key? key}) : super(key: key);
+
+  @override
+  _SliverExample createState() => _SliverExample();
+}
+
+class _SliverExample extends State<SliverExample> {
+  late List<DragAndDropList> _contents;
+  ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _contents = List.generate(10, (index) {
+      return DragAndDropList(
+        header: Row(
+          children: <Widget>[
+            Expanded(
+              flex: 1,
+              child: Divider(),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              child: Text('Header $index'),
+            ),
+            Expanded(
+              flex: 1,
+              child: Divider(),
+            ),
+          ],
+        ),
+        children: <DragAndDropItem>[
+          DragAndDropItem(
+              child: Container(
+                color: Colors.blue,
+                width: 50,
+                height: 30,
+              ),
+              feedbackWidget: Container(
+                color: Colors.red,
+                width: 50,
+                height: 30,
+              )),
+          DragAndDropItem(
+            child: Text('$index.2'),
+          ),
+          DragAndDropItem(
+            child: Text('$index.3'),
+          ),
+        ],
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: CustomScrollView(
+        controller: _scrollController,
+        slivers: <Widget>[
+          SliverAppBar(
+            expandedHeight: 300,
+            flexibleSpace: Container(
+              color: Colors.pinkAccent,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Text(
+                  'Slivers',
+                  style: Theme.of(context).primaryTextTheme.headline1,
+                ),
+              ),
+            ),
+          ),
+          SliverPadding(
+            padding: EdgeInsets.only(top: 20),
+            sliver: DragAndDropLists(
+              children: _contents,
+              onItemReorder: _onItemReorder,
+              onListReorder: _onListReorder,
+              sliverList: true,
+              scrollController: _scrollController,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  _onItemReorder(int oldItemIndex, int oldListIndex, int newItemIndex, int newListIndex) {
+    setState(() {
+      var movedItem = _contents[oldListIndex].children.removeAt(oldItemIndex);
+      _contents[newListIndex].children.insert(newItemIndex, movedItem);
+    });
+  }
+
+  _onListReorder(int oldListIndex, int newListIndex) {
+    setState(() {
+      var movedList = _contents.removeAt(oldListIndex);
+      _contents.insert(newListIndex, movedList);
+    });
+  }
+}
+
+class ListTileExample extends StatefulWidget {
+  ListTileExample({Key? key}) : super(key: key);
+
+  @override
+  _ListTileExample createState() => _ListTileExample();
+}
+
+class _ListTileExample extends State<ListTileExample> {
+  late List<DragAndDropList> _contents;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _contents = List.generate(4, (index) {
+      return DragAndDropList(
+        header: Column(
+          children: <Widget>[
+            ListTile(
+              title: Text(
+                'Header $index',
+              ),
+              subtitle: Text('Header $index subtitle'),
+            ),
+            Divider(),
+          ],
+        ),
+        footer: Column(
+          children: <Widget>[
+            Divider(),
+            ListTile(
+              title: Text(
+                'Footer $index',
+              ),
+              subtitle: Text('Footer $index subtitle'),
+            ),
+          ],
+        ),
+        children: <DragAndDropItem>[
+          DragAndDropItem(
+            child: ListTile(
+              title: Text(
+                'Sub $index.1',
+              ),
+              trailing: Icon(Icons.access_alarm),
+            ),
+          ),
+          DragAndDropItem(
+            child: ListTile(
+              title: Text(
+                'Sub $index.2',
+              ),
+              trailing: Icon(Icons.alarm_off),
+            ),
+          ),
+          DragAndDropItem(
+            child: ListTile(
+              title: Text(
+                'Sub $index.3',
+              ),
+              trailing: Icon(Icons.alarm_on),
+            ),
+          ),
+        ],
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('List Tiles'),
+      ),
+      body: DragAndDropLists(
+        children: _contents,
+        onItemReorder: _onItemReorder,
+        onListReorder: _onListReorder,
+        listGhost: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 30.0),
+          child: Center(
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 40.0, horizontal: 100.0),
+              decoration: BoxDecoration(
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(7.0),
+              ),
+              child: Icon(Icons.add_box),
+            ),
+          ),
+        ),
+        listPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+        contentsWhenEmpty: Row(
+          children: <Widget>[
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(left: 40, right: 10),
+                child: Divider(),
+              ),
+            ),
+            Text(
+              'Empty List',
+              style: TextStyle(color: Theme.of(context).textTheme.caption!.color, fontStyle: FontStyle.italic),
+            ),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(left: 20, right: 40),
+                child: Divider(),
+              ),
+            ),
+          ],
+        ),
+        listDecoration: BoxDecoration(
+          color: Theme.of(context).canvasColor,
+          borderRadius: BorderRadius.all(Radius.circular(6.0)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 3,
+              offset: Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _onItemReorder(int oldItemIndex, int oldListIndex, int newItemIndex, int newListIndex) {
+    setState(() {
+      var movedItem = _contents[oldListIndex].children.removeAt(oldItemIndex);
+      _contents[newListIndex].children.insert(newItemIndex, movedItem);
+    });
+  }
+
+  _onListReorder(int oldListIndex, int newListIndex) {
+    setState(() {
+      var movedList = _contents.removeAt(oldListIndex);
+      _contents.insert(newListIndex, movedList);
+    });
+  }
+}
+
+class HorizontalExample extends StatefulWidget {
+  HorizontalExample({Key? key}) : super(key: key);
+
+  @override
+  _HorizontalExample createState() => _HorizontalExample();
+}
+
+class ProgressStack {
+  final String name;
+  List<Widget> events;
+  ProgressStack({required this.name, required this.events});
+}
+
+class _HorizontalExample extends State<HorizontalExample> {
+  late List<ProgressStack> _lists;
+  List<String> headerList = ["To Do", "In Process", "Done"];
+  @override
+  void initState() {
+    super.initState();
+
+    _lists = headerList
+        .map((e) => ProgressStack(
+              name: e.toString(),
+              events: List.generate(5, (innerIndex) => listText("$e . $innerIndex")),
+            ))
+        .toList();
+  }
+
+  Widget listText(String text) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+        child: Material(
+          borderRadius: BorderRadius.circular(2),
+          elevation: 1,
+          child: ListTile(
+            title: Text(text),
+          ),
+        ),
+      );
+  Widget headerText(String text) => Padding(
+        padding: const EdgeInsets.all(2.0),
+        child: Material(
+          borderRadius: BorderRadius.circular(4),
+          color: Colors.amber,
+          elevation: 2,
+          child: ListTile(
+            title: Text(
+              text,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Horizontal'),
+      ),
+      body: Container(
+        child: DragAndDropLists(
+          children: List.generate(_lists.length, (index) => _buildProgressList(index)),
+          onItemReorder: _onItemReorder,
+          onListReorder: _onListReorder,
+          axis: Axis.horizontal,
+          listWidth: 280,
+          listDraggingWidth: 280,
+          listPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        ),
+      ),
+    );
+  }
+
+  _buildProgressList(index) {
+    var progressStack = _lists[index];
+    return DragAndDropList(
+        decoration: BoxDecoration(color: Colors.black12, borderRadius: BorderRadius.circular(4)),
+        header: headerText(progressStack.name),
+        children: List.generate(progressStack.events.length, (i) => DragAndDropItem(child: progressStack.events[i])));
+  }
+
+  _onItemReorder(int oldItemIndex, int oldListIndex, int newItemIndex, int newListIndex) {
+    setState(() {
+      var movedItem = _lists[oldListIndex].events.removeAt(oldItemIndex);
+      _lists[newListIndex].events.insert(newItemIndex, movedItem);
+    });
+  }
+
+  _onListReorder(int oldListIndex, int newListIndex) {
+    setState(() {
+      var movedList = _lists.removeAt(oldListIndex);
+      _lists.insert(newListIndex, movedList);
+    });
+  }
+}

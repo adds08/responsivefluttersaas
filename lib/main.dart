@@ -4,12 +4,13 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:mapnpospoc/constants.dart';
 import 'package:mapnpospoc/views/project.view/project.detail.view.dart';
-import 'package:mapnpospoc/views/sidemenu.dart';
 import 'package:mapnpospoc/components_custom/responsive_container.dart';
 import 'package:mapnpospoc/models/project.model.dart';
 import 'package:mapnpospoc/models/user.model.dart';
 import 'package:mapnpospoc/viewmodels/viewModels/sidemenu.viewmodel.dart';
+import 'package:mapnpospoc/views/sidemenu.dart';
 import 'package:mapnpospoc/views/topbar.dart';
 
 void main() async {
@@ -28,9 +29,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+
+      /* light theme settings */
       theme: ThemeData(
-        primarySwatch: Colors.orange,
-      ),
+          brightness: Brightness.light,
+          primarySwatch: Colors.orange,
+          scaffoldBackgroundColor: Color(0xFFFFFFFF),
+          textButtonTheme: TextButtonThemeData(
+              style: ButtonStyle(
+                  foregroundColor: MaterialStateProperty.all(smallHeaderForegroundColor),
+                  overlayColor: MaterialStateProperty.all<Color>(smallHeaderOverlayColor),
+                  backgroundColor: MaterialStateProperty.all(smallHeaderBackgroundColor))),
+          buttonTheme: ButtonThemeData(buttonColor: smallHeaderBackgroundColor)),
       home: SafeArea(child: MainApp()),
     );
   }
@@ -43,7 +54,6 @@ class MainApp extends StatelessWidget {
     final screenSize = MediaQuery.of(context).size;
     return ResponsiveContainer(
       tablet: Scaffold(
-        backgroundColor: Colors.black12,
         body: GestureDetector(
           onTap: () {
             FocusManager.instance.primaryFocus?.unfocus();
@@ -64,13 +74,87 @@ class MainApp extends StatelessWidget {
                 flex: 8,
                 child: Column(
                   children: [
-                    Flexible(child: Topbar()),
+                    Topbar(),
                     Expanded(child: FragmentConsumer()),
                   ],
                 ),
               ),
             ],
           ),
+        ),
+      ),
+      mobile: Scaffold(
+        drawer: SizedBox(
+          width: screenSize.width / 10 * 6,
+          child: Material(
+            elevation: 12,
+            child: SideMenu(),
+          ),
+        ),
+        body: GestureDetector(
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Column(
+            children: [
+              SizedBox(
+                height: 6,
+              ),
+              Topbar(),
+              Expanded(child: FragmentConsumer()),
+            ],
+          ),
+        ),
+      ),
+      desktop: Scaffold(
+        body: GestureDetector(
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              children: [
+                Flexible(
+                  flex: 2,
+                  child: SideMenu(),
+                ),
+                SizedBox(
+                  width: 8,
+                  child: VerticalDivider(
+                    width: 2,
+                  ),
+                ),
+                Expanded(
+                  flex: 10,
+                  child: Column(
+                    children: [
+                      Topbar(),
+                      Expanded(child: Container(margin: EdgeInsets.only(top: 18), child: FragmentConsumer())),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class MainAppProjectView extends StatelessWidget {
+  const MainAppProjectView({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return ResponsiveContainer(
+      tablet: Scaffold(
+        appBar: AppBar(),
+        body: GestureDetector(
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: ProjectDetail(),
         ),
       ),
       mobile: Scaffold(
@@ -82,69 +166,6 @@ class MainApp extends StatelessWidget {
           child: ProjectDetail(),
         ),
       ),
-      // mobile: Scaffold(
-      //   backgroundColor: Colors.black26,
-      //   drawer: SizedBox(
-      //     width: screenSize.width / 10 * 5,
-      //     child: Material(
-      //       elevation: 12,
-      //       child: SideMenu(),
-      //     ),
-      //   ),
-      //   body: GestureDetector(
-      //     onTap: () {
-      //       FocusManager.instance.primaryFocus?.unfocus();
-      //     },
-      //     child: Column(
-      //       children: [
-      //         Expanded(
-      //           child: Column(
-      //             children: [
-      //               SizedBox(
-      //                 height: 6,
-      //               ),
-      //               Flexible(child: Topbar()),
-      //               Expanded(child: FragmentConsumer()),
-      //             ],
-      //           ),
-      //         ),
-      //       ],
-      //     ),
-      //   ),
-      // ),
-      // desktop: Scaffold(
-      //   body: GestureDetector(
-      //     onTap: () {
-      //       FocusManager.instance.primaryFocus?.unfocus();
-      //     },
-      //     child: Padding(
-      //       padding: EdgeInsets.symmetric(horizontal: 12),
-      //       child: Row(
-      //         children: [
-      //           Flexible(
-      //             flex: 2,
-      //             child: SideMenu(),
-      //           ),
-      //           SizedBox(
-      //             width: 8,
-      //             child: VerticalDivider(
-      //               width: 2,
-      //             ),
-      //           ),
-      //           Expanded(
-      //             flex: 10,
-      //             child: Column(
-      //               children: [
-      //                 Flexible(child: Topbar()),
-      //                 Expanded(child: Container(margin: EdgeInsets.only(top: 18), child: FragmentConsumer())),
-      //               ],
-      //             ),
-      //           ),
-      //         ],
-      //       ),
-      //     ),
-      //   ),
-      // ),
       desktop: Scaffold(
         appBar: AppBar(),
         body: GestureDetector(

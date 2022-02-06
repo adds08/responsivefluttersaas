@@ -1,48 +1,122 @@
 import 'package:flutter/material.dart';
+import 'package:mapnpospoc/components_custom/header_text_button.dart';
 import 'package:mapnpospoc/components_custom/responsive_container.dart';
+import 'package:mapnpospoc/components_custom/vertical_table_cell.dart';
 import 'package:mapnpospoc/constants.dart';
+import 'package:mapnpospoc/views/project.view/event.kanban.view.dart';
+
+class FullScreenProjectDetail extends StatelessWidget {
+  const FullScreenProjectDetail({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          SizedBox(
+              width: 42,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(4),
+                onTap: () {},
+                child: const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Icon(
+                    Icons.ac_unit,
+                    size: sideMenuIconSize,
+                  ),
+                ),
+              )),
+          SizedBox(
+              width: 42,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(4),
+                onTap: () {},
+                child: const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Icon(Icons.share, size: sideMenuIconSize),
+                ),
+              )),
+          SizedBox(
+            width: 42,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(4),
+              onTap: () {},
+              child: const Padding(
+                padding: EdgeInsets.all(8),
+                child: Icon(Icons.settings, size: sideMenuIconSize),
+              ),
+            ),
+          ),
+          const SizedBox(
+            width: 18,
+          )
+        ],
+      ),
+      body: GestureDetector(
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: const ProjectDetail()),
+    );
+  }
+}
 
 class ProjectDetail extends StatelessWidget {
-  ProjectDetail({Key? key}) : super(key: key);
-  final ScrollController scollBarController = ScrollController(debugLabel: "controller");
+  const ProjectDetail({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(26),
+      padding: EdgeInsets.all(ResponsiveContainer.isMobile(context) ? 8 : 18),
       child: ResponsiveContainer(
-        mobile: Column(
+        mobile: ListView(
+          children: const [ProjectDescriptionHeader(), ProjectDescriptionKanban()],
+        ),
+        tablet: Column(
           children: [
-            Padding(
-              child: OptionBar(),
-              padding: EdgeInsets.only(bottom: 8),
-            ),
             Expanded(
-                child: Scrollbar(
-              isAlwaysShown: true,
-              controller: scollBarController,
-              child: SingleChildScrollView(
-                controller: scollBarController,
-                child: Column(
-                  children: [ProjectDetailSetup(), ProjectComment()],
-                ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                      flex: 1,
+                      child: Column(
+                        children: const [
+                          ProjectDescriptionHeader(),
+                          Expanded(
+                            child: ProjectDescriptionDetails(),
+                          )
+                        ],
+                      )),
+                  const Flexible(flex: 1, child: ProjectDescriptionKanban()),
+                ],
               ),
-            ))
+            )
           ],
         ),
-        tablet: Container(),
         desktop: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              child: OptionBar(),
-              padding: const EdgeInsets.only(bottom: 8),
-            ),
             Expanded(
-                child: Row(
-              children: [
-                Expanded(flex: 2, child: ProjectDetailSetup()),
-                Expanded(flex: 1, child: ProjectComment()),
-              ],
-            ))
+              child: Row(
+                children: [
+                  Expanded(
+                      flex: 1,
+                      child: Column(
+                        children: const [
+                          ProjectDescriptionHeader(),
+                          Expanded(
+                            child: ProjectDescriptionDetails(),
+                          )
+                        ],
+                      )),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  const Expanded(flex: 2, child: ProjectDescriptionKanban()),
+                ],
+              ),
+            )
           ],
         ),
       ),
@@ -50,98 +124,192 @@ class ProjectDetail extends StatelessWidget {
   }
 }
 
-class OptionBar extends StatelessWidget {
-  const OptionBar({Key? key}) : super(key: key);
-
+class ProjectDescriptionHeader extends StatelessWidget {
+  const ProjectDescriptionHeader({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Row(
+    final TextEditingController titleController = TextEditingController();
+    titleController.text =
+        "As an admin I want to mark inactivated employee with red text color in Group Management Report so that they can be easily distinguished.";
+    double headingSize = 28;
+    if (ResponsiveContainer.isTablet(context)) {
+      headingSize = 24;
+    } else if (ResponsiveContainer.isMobile(context)) {
+      headingSize = 22;
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Expanded(child: Text("Projects / Project One")),
-        InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: () {},
-          child: Padding(
-            padding: EdgeInsets.all(6),
-            child: Icon(
-              Icons.ac_unit,
-              size: sideMenuIconSize,
+        const Padding(
+          padding: EdgeInsets.all(4.0),
+          child: Text(
+            "Projects / Project One",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+        TextFormField(
+          onTap: () {
+            // showSaveButton()
+          },
+          maxLines: null,
+          keyboardType: TextInputType.multiline,
+          style: TextStyle(fontSize: headingSize, fontWeight: FontWeight.w500),
+          controller: titleController,
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.all(8),
+            hintText: "Search",
+            filled: true,
+            fillColor: Colors.transparent,
+            hoverColor: Colors.grey.shade300,
+            enabledBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: Colors.transparent),
+              borderRadius: appBorderRadius,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: Colors.amber),
+              borderRadius: appBorderRadius,
             ),
           ),
-          hoverColor: Colors.grey.shade300,
         ),
-        InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: () {},
-          child: Padding(
-            padding: EdgeInsets.all(6),
-            child: Icon(Icons.share, size: sideMenuIconSize),
-          ),
-          hoverColor: Colors.grey.shade300,
+        const SizedBox(
+          height: 8,
         ),
-        InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: () {},
-          child: Padding(
-            padding: EdgeInsets.all(6),
-            child: Icon(Icons.settings, size: sideMenuIconSize),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          child: Row(
+            children: [
+              HeaderTextButton(
+                onPressed: () {},
+                icon: Icons.add,
+                text: "Add Task",
+              ),
+              HeaderTextButton(
+                onPressed: () {},
+                text: "asd",
+              ),
+              HeaderTextButton(
+                onPressed: () {},
+                text: "asd",
+              ),
+            ],
           ),
-          hoverColor: Colors.grey.shade300,
         ),
       ],
     );
   }
 }
 
-class ProjectDetailSetup extends StatelessWidget {
-  const ProjectDetailSetup({Key? key}) : super(key: key);
-
-  Widget projectDetailSetup({isMobile, child}) {
-    if (isMobile) {
-      return SizedBox(
-        height: 500,
-        child: child,
-      );
-    }
-    return Expanded(
-      child: child,
-    );
-  }
+class ProjectDescriptionKanban extends StatelessWidget {
+  const ProjectDescriptionKanban({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Padding(
+      padding: const EdgeInsets.only(left: 4.0, top: 8),
+      child: HorizontalExample(),
+    );
+  }
+}
+
+class ProjectDescriptionDetails extends StatelessWidget {
+  const ProjectDescriptionDetails({Key? key}) : super(key: key);
+
+  InputDecoration inputDecoration({required String placeholder, IconData? icon = Icons.arrow_right}) => InputDecoration(
+      prefixIcon: Icon(icon),
+      hintText: placeholder,
+      filled: true,
+      enabledBorder: OutlineInputBorder(
+        borderSide: const BorderSide(color: Colors.transparent),
+        borderRadius: appBorderRadius,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: const BorderSide(color: Colors.transparent),
+        borderRadius: appBorderRadius,
+      ),
+      contentPadding: const EdgeInsets.all(10));
+  @override
+  Widget build(BuildContext context) {
+    final _controllerEndDate = TextEditingController();
+    final _controllerStartDate = TextEditingController();
+
+    return Table(
+      columnWidths: const {0: IntrinsicColumnWidth(flex: 1), 1: IntrinsicColumnWidth(flex: 5)},
+      border: TableBorder.all(width: 6, color: Colors.white),
       children: [
-        TextFormField(
-          maxLines: null,
-          keyboardType: TextInputType.multiline,
-          style: TextStyle(fontSize: ResponsiveContainer.isMobile(context) ? 22 : 32, fontWeight: FontWeight.w500),
-          initialValue:
-              "As an admin I want to mark inactivated employee with red text color in Group Management Report so that they can be easily distinguished.",
-          decoration: InputDecoration(
-            hintText: "Search",
-            filled: true,
-            fillColor: Colors.transparent,
-            hoverColor: Colors.grey.shade300,
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.transparent),
-              borderRadius: appBorderRadius,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.amber),
-              borderRadius: appBorderRadius,
-            ),
-          ),
-        ),
-        projectDetailSetup(isMobile: ResponsiveContainer.isMobile(context), child: Text("Hello Container"))
+        // TableRow(children: [
+        //   const VerticalAlignTableCell(child: Text("Status")),
+        //   VerticalAlignTableCell(
+        //     child: Container(
+        //       width: 100,
+        //       decoration: BoxDecoration(color: Colors.white54, borderRadius: appBorderRadius),
+        //       child: DropdownButton(
+        //         underline: Container(),
+        //         isExpanded: true,
+        //         isDense: true,
+        //         borderRadius: appBorderRadius,
+        //         hint: const Text("Select"),
+        //         items: ["To Do", "In Progress", "Done"].map((e) {
+        //           return DropdownMenuItem(value: e, child: Text(e.toString()));
+        //         }).toList(),
+        //         onChanged: (String? value) {},
+        //       ),
+        //     ),
+        //   )
+        // ]),
+        TableRow(children: [
+          const VerticalAlignTableCell(child: Text("Start Date")),
+          VerticalAlignTableCell(
+              child: TextFormField(
+            readOnly: true,
+            controller: _controllerStartDate,
+            onTap: () async {
+              DateTime startdate = await showDatePicker(
+                    context: context,
+                    currentDate: DateTime.now(),
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2010),
+                    lastDate: DateTime(2050),
+                  ) ??
+                  DateTime.now();
+              _controllerStartDate.text = startdate.toString().split(" ")[0];
+            },
+            decoration: inputDecoration(placeholder: "Start Date", icon: Icons.calendar_today),
+            validator: (String? text) {
+              if (text == null || text == "null") return "Not a valid input";
+              if (text.isEmpty) return "Missing Field";
+            },
+          ))
+        ]),
+        TableRow(children: [
+          const VerticalAlignTableCell(child: Text("End Date")),
+          VerticalAlignTableCell(
+              child: TextFormField(
+            readOnly: true,
+            controller: _controllerEndDate,
+            onTap: () async {
+              DateTime enddate = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now().add(const Duration(days: 10)),
+                    firstDate: DateTime(2010),
+                    lastDate: DateTime(2050),
+                  ) ??
+                  DateTime.now().add(const Duration(days: 10));
+              _controllerEndDate.text = enddate.toString().split(" ")[0];
+            },
+            decoration: inputDecoration(placeholder: "End Date", icon: Icons.calendar_today),
+            validator: (String? text) {
+              if (text == null || text == "null") return "Not a valid input";
+              if (text.isEmpty) return "Missing Field";
+            },
+          ))
+        ]),
       ],
     );
   }
 }
 
 class ProjectComment extends StatelessWidget {
-  ProjectComment({Key? key}) : super(key: key);
+  const ProjectComment({Key? key}) : super(key: key);
 
   Widget addCommentWidget() {
     return commentRow(
@@ -153,25 +321,25 @@ class ProjectComment extends StatelessWidget {
 
   Widget commentRow({String name = "A", String comment = "Comment Section A", required Color color}) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 4),
             child: CircleAvatar(
-              radius: 22,
+              radius: 20,
               backgroundColor: color,
               child: Text(
                 name,
-                style: TextStyle(fontSize: 22, color: Colors.black),
+                style: const TextStyle(fontSize: 18, color: Colors.black),
               ),
             ),
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 2),
               child: TextFormField(
-                minLines: 2,
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
                 initialValue: comment,
@@ -181,14 +349,14 @@ class ProjectComment extends StatelessWidget {
                     fillColor: color,
                     hoverColor: Colors.grey.shade300,
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
+                      borderSide: const BorderSide(color: Colors.transparent),
                       borderRadius: appBorderRadius,
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: color),
                       borderRadius: appBorderRadius,
                     ),
-                    contentPadding: EdgeInsets.all(12)),
+                    contentPadding: const EdgeInsets.all(12)),
               ),
             ),
           )
@@ -210,7 +378,7 @@ class ProjectComment extends StatelessWidget {
         ? Column(
             children: [
               ...userCommentsMock,
-              Divider(
+              const Divider(
                 height: 8,
               ),
               addCommentWidget(),
@@ -219,7 +387,7 @@ class ProjectComment extends StatelessWidget {
         : Column(
             children: [
               addCommentWidget(),
-              Divider(
+              const Divider(
                 height: 38,
               ),
               Expanded(child: ListView(children: userCommentsMock))

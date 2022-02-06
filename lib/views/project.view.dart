@@ -1,7 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mapnpospoc/notifier/view.notifier.dart';
+import 'package:mapnpospoc/components_custom/header_text_button.dart';
+import 'package:mapnpospoc/components_custom/responsive_container.dart';
 import 'package:mapnpospoc/views/project.view/project.card.view.dart';
 import 'package:mapnpospoc/views/project.view/project.detail.view.dart';
 
@@ -12,28 +13,55 @@ class ProjectView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Flexible(child: ProjectOptionBar()),
-          SizedBox(
-            height: 16,
-          ),
-          Expanded(child: ProjectCardView())
-        ],
+      child: ResponsiveContainer(
+        desktop: Column(
+          children: [
+            ProjectOptionBar(),
+            SizedBox(
+              height: 16,
+            ),
+            Expanded(child: ProjectCardView())
+          ],
+        ),
+        tablet: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ProjectOptionBar(),
+            SizedBox(
+              height: 16,
+            ),
+            Expanded(child: ProjectCardView())
+          ],
+        ),
+        mobile: Stack(
+          fit: StackFit.expand,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ProjectOptionBar(),
+                SizedBox(
+                  height: 16,
+                ),
+                Expanded(child: ProjectCardView())
+              ],
+            ),
+            Positioned(
+              right: 12,
+              bottom: 26,
+              child: FloatingActionButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => FullScreenProjectDetail()));
+                },
+                child: Icon(
+                  Icons.add,
+                  size: 32,
+                ),
+              ),
+            )
+          ],
+        ),
       ),
-    );
-  }
-}
-
-class FullScreenProjectDetail extends StatelessWidget {
-  const FullScreenProjectDetail({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: ProjectDetail(),
     );
   }
 }
@@ -44,51 +72,17 @@ class ProjectOptionBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Row(
       children: [
-        OutlinedButton(
-          onPressed: () {
-            // ref.watch(ViewNotifier.addprojectWidgetNotifier.notifier).show();
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => FullScreenProjectDetail()));
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.add_box_outlined,
-                  size: 28,
-                ),
-                SizedBox(
-                  width: 6,
-                ),
-                Text(
-                  "Add Project",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                )
-              ],
-            ),
-          ),
-        ),
-        OutlinedButton(
-          onPressed: () {},
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.filter_alt_sharp,
-                  size: 28,
-                ),
-                SizedBox(
-                  width: 6,
-                ),
-                Text(
-                  "Filter",
-                  style: TextStyle(fontSize: 14),
-                )
-              ],
-            ),
-          ),
-        ),
+        (ResponsiveContainer.isMobile(context))
+            ? Container()
+            : HeaderTextButton(
+                onPressed: () {
+                  // ref.watch(ViewNotifier.addprojectWidgetNotifier.notifier).show();
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => FullScreenProjectDetail()));
+                },
+                icon: Icons.add_box_outlined,
+                text: "Add Project",
+              ),
+        HeaderTextButton(onPressed: () {}, icon: Icons.filter_alt_sharp, text: "Filter"),
         Expanded(
             child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
