@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapnpospoc/views/dashboard.view.dart';
 import 'package:mapnpospoc/views/project.view.dart';
 import 'package:mapnpospoc/views/user.view.dart';
+import 'package:mapnpospoc/views/usertype.view/usertype.view.dart';
 
 class SideMenuModel {
   late IconData _icon;
@@ -34,6 +35,7 @@ class SideMenuViewModel {
     SideMenuModel(icon: Icons.dashboard, name: "Dashboard", fragment: const DasboardView()),
     SideMenuModel(icon: Icons.task, name: "Projects", fragment: const ProjectView()),
     SideMenuModel(icon: Icons.people, name: "Users", fragment: const UserView()),
+    SideMenuModel(icon: Icons.people, name: "User Types", fragment: const UserTypeView()),
     SideMenuModel(icon: Icons.analytics, name: "Report", fragment: Container()),
   ];
 

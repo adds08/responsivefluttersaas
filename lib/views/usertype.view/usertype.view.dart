@@ -2,29 +2,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapnpospoc/constants.dart';
-import 'package:mapnpospoc/models/user.model.dart';
+import 'package:mapnpospoc/models/usertype.model.dart';
 import 'package:mapnpospoc/notifier/data.notifier.dart';
 import 'package:mapnpospoc/notifier/view.notifier.dart';
 
-class UserView extends ConsumerWidget {
+class UserTypeView extends ConsumerWidget {
   final double heightContainer = 420;
   final double widthContainer = 320;
 
-  const UserView({Key? key}) : super(key: key);
+  const UserTypeView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final height = MediaQuery.of(context).size.height;
     final midHeight = ((4 * height / 10) - heightContainer / 2);
-    final widgetProvider = ref.watch(ViewNotifier.adduserWidgetNotifier);
+    final widgetProvider = ref.watch(ViewNotifier.addusertypeWidgetNotifier);
     return Container(
       padding: EdgeInsets.all(8),
-      key: GlobalObjectKey("dashboard_container"),
       child: Stack(
         alignment: Alignment.center,
         clipBehavior: Clip.none,
         children: [
-          UsersList(),
+          UsersTypeList(),
           (widgetProvider)
               ? Container(
                   color: Colors.transparent,
@@ -34,7 +33,7 @@ class UserView extends ConsumerWidget {
               bottom: widgetProvider ? midHeight : -heightContainer,
               duration: const Duration(milliseconds: 500),
               curve: Curves.easeOut,
-              child: SizedBox(width: widthContainer, height: heightContainer, child: AddUser()))
+              child: SizedBox(width: widthContainer, height: heightContainer, child: AddUserType()))
         ],
       ),
       // child: MyStatefulWidget(),
@@ -42,8 +41,8 @@ class UserView extends ConsumerWidget {
   }
 }
 
-class AddUser extends ConsumerWidget {
-  const AddUser({Key? key}) : super(key: key);
+class AddUserType extends ConsumerWidget {
+  const AddUserType({Key? key}) : super(key: key);
 
   InputDecoration inputDecoration({required String placeholder, IconData? icon = Icons.arrow_right}) => InputDecoration(
       prefixIcon: Icon(icon),
@@ -62,8 +61,7 @@ class AddUser extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     TextEditingController _controllerName = TextEditingController();
-    TextEditingController _controllerAge = TextEditingController();
-    TextEditingController _controllerGender = TextEditingController();
+    TextEditingController _controllerPriority = TextEditingController();
 
     return Card(
         elevation: 12,
@@ -79,12 +77,12 @@ class AddUser extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Add User",
+                      "Add User Type",
                       style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     IconButton(
                       onPressed: () {
-                        ref.read(ViewNotifier.adduserWidgetNotifier.notifier).hide();
+                        ref.read(ViewNotifier.addusertypeWidgetNotifier.notifier).hide();
                       },
                       icon: Icon(Icons.cancel_outlined),
                       color: Colors.redAccent,
@@ -102,11 +100,9 @@ class AddUser extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
-                    controller: _controllerAge, keyboardType: TextInputType.number, decoration: inputDecoration(placeholder: "Age")),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(controller: _controllerGender, decoration: inputDecoration(placeholder: "Gender")),
+                    controller: _controllerPriority,
+                    keyboardType: TextInputType.number,
+                    decoration: inputDecoration(placeholder: "Priority")),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 20.0),
@@ -116,8 +112,7 @@ class AddUser extends ConsumerWidget {
                     TextButton(
                       onPressed: () {
                         _controllerName.clear();
-                        _controllerAge.clear();
-                        _controllerGender.clear();
+                        _controllerPriority.clear();
                       },
                       child: Text(
                         "Reset",
@@ -131,16 +126,13 @@ class AddUser extends ConsumerWidget {
                     TextButton(
                         onPressed: () {
                           String name = _controllerName.text.trim();
-                          int age = int.tryParse(_controllerAge.text.trim()) ?? 0;
-                          String gender = _controllerGender.text.trim();
-                          if (gender.isNotEmpty && name.isNotEmpty && age > 0) {
-                            User newUser =
-                                User(name: _controllerName.text, age: int.parse(_controllerAge.text), gender: _controllerGender.text);
-                            ref.read(DataNotifier.userDataNotifier.notifier).addUser(newUser);
+                          int priority = int.tryParse(_controllerPriority.text.trim()) ?? 0;
+                          if (name.isNotEmpty && priority > 0) {
+                            UserType newUserType = UserType(name: name, priority: priority);
+                            ref.read(DataNotifier.usertypeDataNotifier.notifier).addUserType(newUserType);
                           }
                           _controllerName.clear();
-                          _controllerAge.clear();
-                          _controllerGender.clear();
+                          _controllerPriority.clear();
                         },
                         child: Text(
                           "Submit",
@@ -159,23 +151,22 @@ class AddUser extends ConsumerWidget {
   }
 }
 
-class UsersList extends ConsumerWidget {
-  const UsersList({Key? key}) : super(key: key);
+class UsersTypeList extends ConsumerWidget {
+  const UsersTypeList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userProvider = ref.watch(DataNotifier.userDataNotifier);
+    final userTypeProvider = ref.watch(DataNotifier.usertypeDataNotifier);
     List<DataRow> userRow = [];
-    for (int i = 0; i < userProvider.users.length; i++) {
-      var element = userProvider.users[i];
+    for (int i = 0; i < userTypeProvider.userType.length; i++) {
+      var element = userTypeProvider.userType[i];
       List<DataCell> dataCells = [];
       dataCells.add(DataCell(Text((i + 1).toString())));
       dataCells.add(DataCell(Text(element.name)));
-      dataCells.add(DataCell(Text(element.age.toString())));
-      dataCells.add(DataCell(Text(element.gender)));
+      dataCells.add(DataCell(Text(element.priority.toString())));
       dataCells.add(DataCell(IconButton(
         onPressed: () {
-          userProvider.removeUser(i);
+          userTypeProvider.deleteUserType(element.typeId);
         },
         icon: Icon(Icons.delete),
         color: Colors.redAccent,
@@ -196,13 +187,13 @@ class UsersList extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "List Users",
+                    "User Types",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
                   ),
                   MaterialButton(
                     color: Colors.amber,
                     onPressed: () {
-                      ref.read(ViewNotifier.adduserWidgetNotifier.notifier).show();
+                      ref.read(ViewNotifier.addusertypeWidgetNotifier.notifier).show();
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(4.0),
@@ -213,7 +204,7 @@ class UsersList extends ConsumerWidget {
                             size: 28,
                           ),
                           Text(
-                            "Add User",
+                            "Add User Type",
                             style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                           )
                         ],
@@ -234,8 +225,7 @@ class UsersList extends ConsumerWidget {
                   columns: const [
                     DataColumn(label: Text("S.No.")),
                     DataColumn(label: Text("Name")),
-                    DataColumn(label: Text("Age")),
-                    DataColumn(label: Text("Gender")),
+                    DataColumn(label: Text("Priority")),
                     DataColumn(label: Text("Action")),
                   ],
                   rows: userRow),

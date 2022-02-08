@@ -17,34 +17,43 @@ class ProjectAdapter extends TypeAdapter<Project> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Project(
-      name: fields[1] as String,
-      code: fields[2] == null ? 0 : fields[2] as int,
-      description: fields[3] as String,
-    )
-      ..id = fields[0] as String
-      ..startdate = fields[4] as String
-      ..enddate = fields[5] as String
-      ..status = fields[6] == null ? 1 : fields[6] as int;
+      projectId: fields[0] as String?,
+      projectStartdate: fields[4] as String?,
+      projectEnddate: fields[5] as String?,
+      projectName: fields[1] as String,
+      projectCode: fields[2] == null ? 0 : fields[2] as int,
+      projectDescription: fields[3] as String,
+      status: fields[6] == null ? 1 : fields[6] as int,
+      clientId: fields[7] == null ? '' : fields[7] as String,
+      leadId: fields[8] == null ? '' : fields[8] as String,
+      taskId: fields[9] == null ? [] : (fields[9] as List).cast<String>(),
+    );
   }
 
   @override
   void write(BinaryWriter writer, Project obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(10)
       ..writeByte(0)
-      ..write(obj.id)
+      ..write(obj.projectId)
       ..writeByte(1)
-      ..write(obj.name)
+      ..write(obj.projectName)
       ..writeByte(2)
-      ..write(obj.code)
+      ..write(obj.projectCode)
       ..writeByte(3)
-      ..write(obj.description)
+      ..write(obj.projectDescription)
       ..writeByte(4)
-      ..write(obj.startdate)
+      ..write(obj.projectStartdate)
       ..writeByte(5)
-      ..write(obj.enddate)
+      ..write(obj.projectEnddate)
       ..writeByte(6)
-      ..write(obj.status);
+      ..write(obj.status)
+      ..writeByte(7)
+      ..write(obj.clientId)
+      ..writeByte(8)
+      ..write(obj.leadId)
+      ..writeByte(9)
+      ..write(obj.taskId);
   }
 
   @override

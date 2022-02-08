@@ -74,11 +74,11 @@ class AddProject extends ConsumerWidget {
     final TextEditingController _controllerEndDate = TextEditingController();
 
     if (provider.state == DataFormState.update) {
-      _controllerName.text = projectNotifier[provider.updateIndex].name;
-      _controllerCode.text = projectNotifier[provider.updateIndex].code.toString();
-      _controllerDescription.text = projectNotifier[provider.updateIndex].description;
-      _controllerStartDate.text = projectNotifier[provider.updateIndex].startdate;
-      _controllerEndDate.text = projectNotifier[provider.updateIndex].enddate;
+      _controllerName.text = projectNotifier[provider.updateIndex].projectName;
+      _controllerCode.text = projectNotifier[provider.updateIndex].projectCode.toString();
+      _controllerDescription.text = projectNotifier[provider.updateIndex].projectDescription;
+      _controllerStartDate.text = projectNotifier[provider.updateIndex].projectStartdate ?? "";
+      _controllerEndDate.text = projectNotifier[provider.updateIndex].projectEnddate ?? "";
     }
 
     return Card(
@@ -229,18 +229,22 @@ class AddProject extends ConsumerWidget {
                               String startDate = _controllerStartDate.text.trim();
                               String endDate = _controllerEndDate.text.trim();
                               if (provider.state == DataFormState.create) {
-                                Project newProject =
-                                    Project(name: name, code: code, description: description, sdate: startDate, edate: endDate);
+                                Project newProject = Project(
+                                    projectName: name,
+                                    projectCode: code,
+                                    projectDescription: description,
+                                    projectStartdate: startDate,
+                                    projectEnddate: endDate);
                                 ref.read(DataNotifier.projectDataNotifier).addProject(newProject);
                                 _formKey.currentState!.reset();
                               } else if (provider.state == DataFormState.update) {
                                 Project newProject = Project(
-                                    uuid: projectNotifier[provider.updateIndex].id,
-                                    name: name,
-                                    code: code,
-                                    description: description,
-                                    sdate: startDate,
-                                    edate: endDate);
+                                    projectId: projectNotifier[provider.updateIndex].projectId,
+                                    projectName: name,
+                                    projectCode: code,
+                                    projectDescription: description,
+                                    projectStartdate: startDate,
+                                    projectEnddate: endDate);
                                 ref.read(DataNotifier.projectDataNotifier).updateProject(provider.updateIndex, newProject);
                               }
                             }
@@ -284,11 +288,11 @@ class ProjectsList extends ConsumerWidget {
       // DataColumn(label: Text("Action")),
 
       dataCells.add(DataCell(Center(child: Text((i + 1).toString()))));
-      dataCells.add(DataCell(Center(child: Text(element.name))));
-      dataCells.add(DataCell(Center(child: Text(element.code.toString()))));
-      dataCells.add(DataCell(Center(child: Text(element.description))));
-      dataCells.add(DataCell(Center(child: Text(element.startdate))));
-      dataCells.add(DataCell(Center(child: Text(element.enddate))));
+      dataCells.add(DataCell(Center(child: Text(element.projectName))));
+      dataCells.add(DataCell(Center(child: Text(element.projectCode.toString()))));
+      dataCells.add(DataCell(Center(child: Text(element.projectDescription))));
+      dataCells.add(DataCell(Center(child: Text(element.projectStartdate ?? ""))));
+      dataCells.add(DataCell(Center(child: Text(element.projectEnddate ?? ""))));
       dataCells.add(DataCell(Center(child: Text(element.status.toString()))));
       dataCells.add(DataCell(Center(
           child: Row(

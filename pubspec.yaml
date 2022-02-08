@@ -39,10 +39,8 @@ dependencies:
   hive_flutter:
   uuid: ^3.0.5
   flutter_svg:
-  adobe_xd: ^2.0.0+1
-  sliding_sheet: ^0.5.2
   drag_and_drop_lists: ^0.3.2+2
-
+  connectivity_plus: ^2.2.0
 
 dev_dependencies:
   flutter_test:
