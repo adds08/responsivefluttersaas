@@ -34,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
     //   "password": md5.convert(utf8.encode(authuserdata.password)).toString(),
     //   "database": "upaystaging001"
     // });
-
+    //parse
     http
         .get(Uri.parse("http://44.202.199.120/upayeval/server/oauthserverdiscovery.aspx"))
         .timeout(Duration(seconds: 10))
