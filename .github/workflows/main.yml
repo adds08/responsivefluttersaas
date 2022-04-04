@@ -15,7 +15,6 @@ jobs:
         with:
           channel: "beta"
       - run: flutter pub get
-      - run: flutter test
       - run: flutter build web --release --base-href "/responsivefluttersaas/"
       - run: |
           cd build/web
