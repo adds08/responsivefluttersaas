@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mapnpospoc/constants.dart';
+import 'package:mapnpospoc/login.dart';
 import 'package:mapnpospoc/views/project.view/project.detail.view.dart';
-import 'package:mapnpospoc/components_custom/responsive_container.dart';
+import 'package:mapnpospoc/views/components_custom/responsive_container.dart';
 import 'package:mapnpospoc/models/project.model.dart';
 import 'package:mapnpospoc/models/user.model.dart';
 import 'package:mapnpospoc/viewmodels/viewModels/sidemenu.viewmodel.dart';
@@ -42,7 +43,18 @@ class MyApp extends StatelessWidget {
                   overlayColor: MaterialStateProperty.all<Color>(smallHeaderOverlayColor),
                   backgroundColor: MaterialStateProperty.all(smallHeaderBackgroundColor))),
           buttonTheme: ButtonThemeData(buttonColor: smallHeaderBackgroundColor)),
-      home: SafeArea(child: MainApp()),
+      home: SafeArea(child: SplashScreen()),
+    );
+  }
+}
+
+class SplashScreen extends StatelessWidget {
+  const SplashScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: LoginScreen(),
     );
   }
 }
