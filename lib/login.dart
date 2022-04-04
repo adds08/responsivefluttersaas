@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+//aras auth model
 class AuthUserData {
   String username;
   String password;
@@ -10,6 +11,7 @@ class AuthUserData {
   });
 }
 
+//login screen
 class LoginScreen extends StatefulWidget {
   @override
   State<LoginScreen> createState() => _LoginScreenState();
