@@ -6,8 +6,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mapnpospoc/components_custom/custom_dropdown.dart';
-import 'package:mapnpospoc/components_custom/responsive_container.dart';
+import 'package:mapnpospoc/views/components_custom/custom_dropdown.dart';
+import 'package:mapnpospoc/views/components_custom/responsive_container.dart';
 import 'package:mapnpospoc/constants.dart';
 
 enum ServerStatus { connecting, online, offline, error }
@@ -103,6 +103,7 @@ class TopbarDesktop extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Flexible(
+            flex: 1,
             child: TextField(
               decoration: InputDecoration(
                   isDense: true,
@@ -122,6 +123,7 @@ class TopbarDesktop extends StatelessWidget {
             ),
           ),
           Expanded(
+            flex: 2,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [

@@ -35,16 +35,4 @@ class HeaderTextButton extends StatelessWidget {
       ),
     );
   }
-
-  @override
-  ButtonStyle defaultStyleOf(BuildContext context) {
-    // TODO: implement defaultStyleOf
-    throw UnimplementedError();
-  }
-
-  @override
-  ButtonStyle? themeStyleOf(BuildContext context) {
-    // TODO: implement themeStyleOf
-    throw UnimplementedError();
-  }
 }

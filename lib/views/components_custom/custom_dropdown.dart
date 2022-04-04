@@ -54,7 +54,8 @@ class _CustomDropdownState extends State<CustomDropdown> {
               left: offset.dx,
               top: offset.dy + size.height,
               width: size.width,
-              child: Card(
+              child: Material(
+                type: MaterialType.canvas,
                 elevation: 4.0,
                 child: ListView(padding: EdgeInsets.zero, shrinkWrap: true, children: widget.children),
               ),
@@ -79,11 +80,9 @@ class _CustomDropdownState extends State<CustomDropdown> {
         child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 widget.child,
-                const SizedBox(
-                  width: 8,
-                ),
                 AnimatedContainer(
                   transform: (isMenuOpen) ? Matrix4.rotationX(3.14) : Matrix4.rotationX(0),
                   transformAlignment: Alignment.center,

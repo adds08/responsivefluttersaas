@@ -1,10 +1,12 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mapnpospoc/views/components_custom/error_loading.dart';
 import 'package:mapnpospoc/constants.dart';
 import 'package:mapnpospoc/models/usertype.model.dart';
 import 'package:mapnpospoc/notifier/data.notifier.dart';
 import 'package:mapnpospoc/notifier/view.notifier.dart';
+import 'package:mapnpospoc/viewmodels/dataModels/usertype.datamodel.dart';
 
 class UserTypeView extends ConsumerWidget {
   final double heightContainer = 420;
@@ -157,82 +159,96 @@ class UsersTypeList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userTypeProvider = ref.watch(DataNotifier.usertypeDataNotifier);
-    List<DataRow> userRow = [];
-    for (int i = 0; i < userTypeProvider.userType.length; i++) {
-      var element = userTypeProvider.userType[i];
-      List<DataCell> dataCells = [];
-      dataCells.add(DataCell(Text((i + 1).toString())));
-      dataCells.add(DataCell(Text(element.name)));
-      dataCells.add(DataCell(Text(element.priority.toString())));
-      dataCells.add(DataCell(IconButton(
-        onPressed: () {
-          userTypeProvider.deleteUserType(element.typeId);
-        },
-        icon: Icon(Icons.delete),
-        color: Colors.redAccent,
-      )));
-      userRow.add(DataRow(cells: dataCells));
-    }
 
-    return Card(
-      color: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: appBorderRadius),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Flexible(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "User Types",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
-                  ),
-                  MaterialButton(
-                    color: Colors.amber,
-                    onPressed: () {
-                      ref.read(ViewNotifier.addusertypeWidgetNotifier.notifier).show();
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.add_reaction,
-                            size: 28,
-                          ),
-                          Text(
-                            "Add User Type",
-                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                          )
-                        ],
+    switch (userTypeProvider.state) {
+      case FutureState.error:
+        return ErrorLoading(
+          onClick: () {
+            ref.read(DataNotifier.usertypeDataNotifier).getUserTypes();
+          },
+        );
+      case FutureState.loaded:
+        List<DataRow> userRow = [];
+        for (int i = 0; i < userTypeProvider.userType.length; i++) {
+          var element = userTypeProvider.userType[i];
+          List<DataCell> dataCells = [];
+          dataCells.add(DataCell(Text((i + 1).toString())));
+          dataCells.add(DataCell(Text(element.name)));
+          dataCells.add(DataCell(Text(element.priority.toString())));
+          dataCells.add(DataCell(IconButton(
+            onPressed: () {
+              userTypeProvider.deleteUserType(element.typeId);
+            },
+            icon: Icon(Icons.delete),
+            color: Colors.redAccent,
+          )));
+          userRow.add(DataRow(cells: dataCells));
+        }
+
+        return Card(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: appBorderRadius),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "User Types",
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
                       ),
-                    ),
-                  )
-                ],
-              ),
+                      MaterialButton(
+                        color: Colors.amber,
+                        onPressed: () {
+                          ref.read(ViewNotifier.addusertypeWidgetNotifier.notifier).show();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.add_reaction,
+                                size: 28,
+                              ),
+                              Text(
+                                "Add User Type",
+                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 6,
+                ),
+                Expanded(
+                    child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: DataTable(
+                      columnSpacing: (MediaQuery.of(context).size.width / 10) * 0.5,
+                      columns: const [
+                        DataColumn(label: Text("S.No.")),
+                        DataColumn(label: Text("Name")),
+                        DataColumn(label: Text("Priority")),
+                        DataColumn(label: Text("Action")),
+                      ],
+                      rows: userRow),
+                ))
+              ],
             ),
-            SizedBox(
-              height: 6,
-            ),
-            Expanded(
-                child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                  columnSpacing: (MediaQuery.of(context).size.width / 10) * 0.5,
-                  columns: const [
-                    DataColumn(label: Text("S.No.")),
-                    DataColumn(label: Text("Name")),
-                    DataColumn(label: Text("Priority")),
-                    DataColumn(label: Text("Action")),
-                  ],
-                  rows: userRow),
-            ))
-          ],
-        ),
-      ),
-    );
+          ),
+        );
+
+      default:
+        break;
+    }
+    return CircularProgressIndicator();
   }
 }

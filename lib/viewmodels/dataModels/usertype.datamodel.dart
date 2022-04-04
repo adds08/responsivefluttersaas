@@ -11,6 +11,8 @@ import 'package:http/http.dart' as http;
 //   checkRequest(http.Response response) {}
 // }
 
+enum FutureState { init, loading, loaded, error }
+
 class RemoteRepo {
   Future<List<UserType>> list() async {
     http.Response response = await http.get(Uri.parse('http://localhost:8000/usertype/list'));
@@ -54,6 +56,8 @@ class RemoteRepo {
 }
 
 class UserTypeProvider extends ChangeNotifier {
+  FutureState state = FutureState.init;
+
   List<UserType> _usertypes = [];
   RemoteRepo remoteRepo = RemoteRepo();
   UserTypeProvider() {
@@ -63,11 +67,17 @@ class UserTypeProvider extends ChangeNotifier {
   List<UserType> get userType => _usertypes;
 
   Future<void> getUserTypes() async {
-    _usertypes = await remoteRepo.list();
-    notifyListeners();
+    setState = FutureState.loading;
+    try {
+      _usertypes = await remoteRepo.list();
+      setState = FutureState.loaded;
+    } catch (ex) {
+      setState = FutureState.error;
+    }
   }
 
   Future<void> addUserType(UserType newUserType) async {
+    setState = FutureState.loading;
     bool value = await remoteRepo.create(newUserType.toMap());
     if (value) {
       await getUserTypes();
@@ -75,9 +85,15 @@ class UserTypeProvider extends ChangeNotifier {
   }
 
   Future<void> deleteUserType(int id) async {
+    setState = FutureState.loading;
     bool value = await remoteRepo.delete(id);
     if (value) {
       await getUserTypes();
     }
+  }
+
+  set setState(FutureState state) {
+    this.state = state;
+    notifyListeners();
   }
 }

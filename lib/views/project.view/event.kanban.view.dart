@@ -1,6 +1,6 @@
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
-import 'package:mapnpospoc/components_custom/responsive_container.dart';
+import 'package:mapnpospoc/views/components_custom/responsive_container.dart';
 
 class HorizontalExample extends StatefulWidget {
   HorizontalExample({Key? key}) : super(key: key);
@@ -17,7 +17,7 @@ class ProgressStack {
 
 class _HorizontalExample extends State<HorizontalExample> {
   late List<ProgressStack> _lists;
-  List<String> headerList = ["To Do", "In Process", "Done"];
+  List<String> headerList = ["To Do", "In Process", "Done", "fone", "fone", "fone", "fone"];
   @override
   void initState() {
     super.initState();
@@ -49,24 +49,21 @@ class _HorizontalExample extends State<HorizontalExample> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     return ResponsiveContainer(
-      desktop: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: DragAndDropLists(
-          itemDragHandle: DragHandle(
-            child: Container(
-              margin: EdgeInsets.only(right: 20),
-              child: Icon(Icons.drag_indicator),
-            ),
+      desktop: DragAndDropLists(
+        itemDragHandle: DragHandle(
+          child: Container(
+            margin: EdgeInsets.only(right: 20),
+            child: Icon(Icons.drag_indicator),
           ),
-          disableScrolling: true,
-          children: List.generate(_lists.length, (index) => _buildProgressList(index)),
-          onItemReorder: _onItemReorder,
-          onListReorder: _onListReorder,
-          axis: Axis.horizontal,
-          listWidth: (2.1 * width / 10),
-          listDraggingWidth: (2 * width / 10),
-          listPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
         ),
+        disableScrolling: true,
+        children: List.generate(_lists.length, (index) => _buildProgressList(index)),
+        onItemReorder: _onItemReorder,
+        onListReorder: _onListReorder,
+        axis: Axis.horizontal,
+        listWidth: (2.1 * width / 10),
+        listDraggingWidth: (2 * width / 10),
+        listPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       ),
       tablet: DragAndDropLists(
         scrollController: ScrollController(),

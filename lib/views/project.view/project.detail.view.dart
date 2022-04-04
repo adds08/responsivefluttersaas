@@ -1,8 +1,13 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
-import 'package:mapnpospoc/components_custom/header_text_button.dart';
-import 'package:mapnpospoc/components_custom/responsive_container.dart';
-import 'package:mapnpospoc/components_custom/vertical_table_cell.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mapnpospoc/views/components_custom/custom_dropdown.dart';
+import 'package:mapnpospoc/views/components_custom/header_text_button.dart';
+import 'package:mapnpospoc/views/components_custom/responsive_container.dart';
+import 'package:mapnpospoc/views/components_custom/vertical_table_cell.dart';
 import 'package:mapnpospoc/constants.dart';
+import 'package:mapnpospoc/notifier/data.notifier.dart';
 import 'package:mapnpospoc/views/project.view/event.kanban.view.dart';
 
 class FullScreenProjectDetail extends StatelessWidget {
@@ -61,8 +66,55 @@ class FullScreenProjectDetail extends StatelessWidget {
   }
 }
 
-class ProjectDetail extends StatelessWidget {
+class ProjectDetail extends StatefulWidget {
   const ProjectDetail({Key? key}) : super(key: key);
+
+  @override
+  State<ProjectDetail> createState() => _ProjectDetailState();
+}
+
+class _ProjectDetailState extends State<ProjectDetail> {
+  late double detailWidth;
+  late double kanbanOffset;
+  Duration kanbanDuration = Duration(milliseconds: 300);
+  double detailOpacity = 1;
+  late bool showDetail;
+  bool isHover = false;
+
+  ScrollController scontroller = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    showDetail = true;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (ResponsiveContainer.isDesktop(context)) {
+      detailWidth = 3 * MediaQuery.of(context).size.width / 10;
+      kanbanOffset = detailWidth + 12;
+    }
+  }
+
+  void toggleDetail() {
+    showDetail = !showDetail;
+    setState(() {
+      if (showDetail) {
+        kanbanOffset = 0;
+      } else {
+        kanbanOffset = detailWidth + 12;
+      }
+    });
+  }
+
+  void dragKanban(details) {
+    setState(() {
+      kanbanDuration = Duration.zero;
+      kanbanOffset = details.globalPosition.dx - 55;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,29 +146,76 @@ class ProjectDetail extends StatelessWidget {
             )
           ],
         ),
-        desktop: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        desktop: Stack(
+          fit: StackFit.expand,
           children: [
-            Expanded(
-              child: Row(
-                children: [
-                  Expanded(
-                      flex: 1,
-                      child: Column(
-                        children: const [
-                          ProjectDescriptionHeader(),
-                          Expanded(
-                            child: ProjectDescriptionDetails(),
-                          )
-                        ],
-                      )),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  const Expanded(flex: 2, child: ProjectDescriptionKanban()),
-                ],
+            Positioned(
+              top: 0,
+              bottom: 0,
+              width: detailWidth,
+              child: AnimatedOpacity(
+                duration: Duration.zero,
+                opacity: detailOpacity,
+                child: Column(
+                  children: const [
+                    ProjectDescriptionHeader(),
+                    Expanded(
+                      child: ProjectDescriptionDetails(),
+                    )
+                  ],
+                ),
               ),
-            )
+            ),
+            AnimatedPositioned(
+                left: kanbanOffset,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                duration: kanbanDuration,
+                curve: Curves.easeInOutSine,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          VerticalDivider(),
+                          InkWell(
+                            onTap: () {
+                              toggleDetail();
+                            },
+                            onHover: (hover) {
+                              setState(() {
+                                isHover = hover;
+                              });
+                            },
+                            child: Icon(
+                              Icons.swap_horizontal_circle_rounded,
+                              color: (isHover) ? Colors.black : Colors.grey,
+                              size: 38,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Expanded(
+                          child: RawScrollbar(
+                        isAlwaysShown: true,
+                        scrollbarOrientation: ScrollbarOrientation.bottom,
+                        thickness: 16,
+                        controller: scontroller,
+                        child: SingleChildScrollView(
+                          controller: scontroller,
+                          scrollDirection: Axis.horizontal,
+                          child: HorizontalExample(),
+                        ),
+                      ))
+                    ],
+                  ),
+                )),
           ],
         ),
       ),
@@ -129,8 +228,6 @@ class ProjectDescriptionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextEditingController titleController = TextEditingController();
-    titleController.text =
-        "As an admin I want to mark inactivated employee with red text color in Group Management Report so that they can be easily distinguished.";
     double headingSize = 28;
     if (ResponsiveContainer.isTablet(context)) {
       headingSize = 24;
@@ -157,7 +254,7 @@ class ProjectDescriptionHeader extends StatelessWidget {
           controller: titleController,
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(8),
-            hintText: "Search",
+            hintText: "Add a title here",
             filled: true,
             fillColor: Colors.transparent,
             hoverColor: Colors.grey.shade300,
@@ -236,26 +333,6 @@ class ProjectDescriptionDetails extends StatelessWidget {
       columnWidths: const {0: IntrinsicColumnWidth(flex: 1), 1: IntrinsicColumnWidth(flex: 5)},
       border: TableBorder.all(width: 6, color: Colors.white),
       children: [
-        // TableRow(children: [
-        //   const VerticalAlignTableCell(child: Text("Status")),
-        //   VerticalAlignTableCell(
-        //     child: Container(
-        //       width: 100,
-        //       decoration: BoxDecoration(color: Colors.white54, borderRadius: appBorderRadius),
-        //       child: DropdownButton(
-        //         underline: Container(),
-        //         isExpanded: true,
-        //         isDense: true,
-        //         borderRadius: appBorderRadius,
-        //         hint: const Text("Select"),
-        //         items: ["To Do", "In Progress", "Done"].map((e) {
-        //           return DropdownMenuItem(value: e, child: Text(e.toString()));
-        //         }).toList(),
-        //         onChanged: (String? value) {},
-        //       ),
-        //     ),
-        //   )
-        // ]),
         TableRow(children: [
           const VerticalAlignTableCell(child: Text("Start Date")),
           VerticalAlignTableCell(
@@ -273,7 +350,7 @@ class ProjectDescriptionDetails extends StatelessWidget {
                   DateTime.now();
               _controllerStartDate.text = startdate.toString().split(" ")[0];
             },
-            decoration: inputDecoration(placeholder: "Start Date", icon: Icons.calendar_today),
+            decoration: inputDecoration(placeholder: "Enter the start date", icon: Icons.calendar_today),
             validator: (String? text) {
               if (text == null || text == "null") return "Not a valid input";
               if (text.isEmpty) return "Missing Field";
@@ -296,12 +373,38 @@ class ProjectDescriptionDetails extends StatelessWidget {
                   DateTime.now().add(const Duration(days: 10));
               _controllerEndDate.text = enddate.toString().split(" ")[0];
             },
-            decoration: inputDecoration(placeholder: "End Date", icon: Icons.calendar_today),
+            decoration: inputDecoration(placeholder: "Enter the end date", icon: Icons.calendar_today),
             validator: (String? text) {
               if (text == null || text == "null") return "Not a valid input";
               if (text.isEmpty) return "Missing Field";
             },
           ))
+        ]),
+        TableRow(children: [
+          const VerticalAlignTableCell(child: Text("Client")),
+          VerticalAlignTableCell(
+              child: Container(
+            color: Colors.black,
+          ))
+        ]),
+        TableRow(children: [
+          const VerticalAlignTableCell(child: Text("Lead")),
+          VerticalAlignTableCell(child: Consumer(builder: (context, ref, _) {
+            var userProvider = ref.watch(DataNotifier.userDataNotifier);
+            return CustomDropdown(
+              child: const Text("Select client"),
+              children: userProvider.users
+                  .map((e) => ListTile(
+                        selectedTileColor: Colors.amber,
+                        selectedColor: Colors.black,
+                        title: Text(e.name),
+                        subtitle: Text(e.email),
+                        leading: Text(e.age.toString()),
+                        onTap: () {},
+                      ))
+                  .toList(),
+            );
+          }))
         ]),
       ],
     );

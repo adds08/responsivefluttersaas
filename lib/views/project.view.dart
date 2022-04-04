@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mapnpospoc/components_custom/header_text_button.dart';
-import 'package:mapnpospoc/components_custom/responsive_container.dart';
+import 'package:mapnpospoc/views/components_custom/header_text_button.dart';
+import 'package:mapnpospoc/views/components_custom/responsive_container.dart';
 import 'package:mapnpospoc/views/project.view/project.card.view.dart';
 import 'package:mapnpospoc/views/project.view/project.detail.view.dart';
 
