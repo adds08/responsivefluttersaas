@@ -41,6 +41,7 @@ dependencies:
   flutter_svg:
   drag_and_drop_lists: ^0.3.2+2
   connectivity_plus: ^2.2.0
+  shared_preferences: ^2.0.13
 
 dev_dependencies:
   flutter_test:
