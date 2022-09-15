@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:mapnpospoc/main.dart';
+import 'package:mapnpospoc/main_latest.dart';
 import 'package:mapnpospoc/views/user.view.dart';
 
 void main() {

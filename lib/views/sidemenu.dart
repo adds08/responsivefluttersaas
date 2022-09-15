@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapnpospoc/constants.dart';
-import 'package:mapnpospoc/main.dart';
+import 'package:mapnpospoc/main_latest.dart';
 import 'package:mapnpospoc/viewmodels/viewModels/sidemenu.viewmodel.dart';
 
 class SideMenu extends ConsumerWidget {

@@ -59,12 +59,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        //     body: Center(
-        //         child: Column(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   mainAxisSize: MainAxisSize.max,
-        //   children: [CircularProgressIndicator(), Text("Loading...")],
-        // )));
         body: FutureBuilder<SharedPreferences>(
             future: SharedPreferences.getInstance(),
             builder: (context, snapshot) {
@@ -124,21 +118,6 @@ class _LoginScreenState extends State<LoginScreen> {
       "Access-Control-Allow-Headers": "Origin, Content-Type, Accept"
     };
 
-    // var newHeaders = {
-    //     "content-type": "application/x-www-form-urlencoded",
-    //     // "Accept": "*/*",
-    //     // "Accept-Encoding": "gzip, deflate",
-    //     // "Accept-Language": "en-US,en;q=0.9",
-    //     // "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    //     // "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE, HEAD",
-    //     // "Access-Control-Allow-Origin": "http://18.233.164.43",
-    //     // "Connection": "keep-alive",
-    //     // "Content-Length": "144",
-    //     // "Host": "44.202.199.120",
-    //     // "Referer": "http://18.233.164.43/",
-    //     // "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36",
-    //   };
-
     var request = http.Request('POST', Uri.parse('http://44.202.199.120/upayeval/OAuthServer/connect/token'));
     request.bodyFields = {
       'username': authuserdata.username,
@@ -159,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
         var value = await response.stream.bytesToString();
         AuthModel authModel = AuthModel.fromJson(value);
         SharedPreferences pref = await SharedPreferences.getInstance();
-        pref.setString("access_token", authModel.accessToken);
+        pref.setString("access_token", jsonEncode(authModel.toJson()));
         setState(() {
           state = "auth";
         });

@@ -1,199 +1,261 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'dart:convert';
 import 'dart:core';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:mapnpospoc/constants.dart';
-import 'package:mapnpospoc/login.dart';
-import 'package:mapnpospoc/views/project.view/project.detail.view.dart';
-import 'package:mapnpospoc/views/components_custom/responsive_container.dart';
-import 'package:mapnpospoc/models/project.model.dart';
-import 'package:mapnpospoc/models/user.model.dart';
-import 'package:mapnpospoc/viewmodels/viewModels/sidemenu.viewmodel.dart';
-import 'package:mapnpospoc/views/sidemenu.dart';
-import 'package:mapnpospoc/views/topbar.dart';
+import 'package:uuid/uuid.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
-  Hive.registerAdapter(UserAdapter());
-  Hive.registerAdapter(ProjectAdapter());
-  runApp(ProviderScope(child: const MyApp()));
+  runApp(ProviderScope(child: MyAppState()));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+var widgetMoveProvider = ChangeNotifierProvider<WidgetMoveProvider>((ref) => WidgetMoveProvider());
 
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-
-      /* light theme settings */
-      theme: ThemeData(
-          brightness: Brightness.light,
-          primarySwatch: Colors.orange,
-          scaffoldBackgroundColor: Color(0xFFFFFFFF),
-          textButtonTheme: TextButtonThemeData(
-              style: ButtonStyle(
-                  foregroundColor: MaterialStateProperty.all(smallHeaderForegroundColor),
-                  overlayColor: MaterialStateProperty.all<Color>(smallHeaderOverlayColor),
-                  backgroundColor: MaterialStateProperty.all(smallHeaderBackgroundColor))),
-          buttonTheme: ButtonThemeData(buttonColor: smallHeaderBackgroundColor)),
-      routes: {
-        "/": (context) => SplashScreen(),
-        "/login": (context) => LoginScreen(),
-        "/user": (context) => UserScreen(),
-      },
-    );
-  }
-}
-
-class MainApp extends StatelessWidget {
-  const MainApp({Key? key}) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-    return ResponsiveContainer(
-      tablet: Scaffold(
-        body: GestureDetector(
-          onTap: () {
-            FocusManager.instance.primaryFocus?.unfocus();
-          },
-          child: Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: SideMenu(),
-              ),
-              SizedBox(
-                width: 8,
-                child: VerticalDivider(
-                  width: 4,
-                ),
-              ),
-              Expanded(
-                flex: 8,
-                child: Column(
-                  children: [
-                    Topbar(),
-                    Expanded(child: FragmentConsumer()),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      mobile: Scaffold(
-        drawer: SizedBox(
-          width: screenSize.width / 10 * 6,
-          child: Material(
-            elevation: 12,
-            child: SideMenu(),
-          ),
-        ),
-        body: GestureDetector(
-          onTap: () {
-            FocusManager.instance.primaryFocus?.unfocus();
-          },
-          child: Column(
-            children: [
-              SizedBox(
-                height: 6,
-              ),
-              Topbar(),
-              Expanded(child: FragmentConsumer()),
-            ],
-          ),
-        ),
-      ),
-      desktop: Scaffold(
-        body: GestureDetector(
-          onTap: () {
-            FocusManager.instance.primaryFocus?.unfocus();
-          },
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12),
-            child: Row(
-              children: [
-                Flexible(
-                  flex: 2,
-                  child: SideMenu(),
-                ),
-                SizedBox(
-                  width: 8,
-                  child: VerticalDivider(
-                    width: 2,
-                  ),
-                ),
-                Expanded(
-                  flex: 10,
-                  child: Column(
-                    children: [
-                      Topbar(),
-                      Expanded(child: Container(margin: EdgeInsets.only(top: 18), child: FragmentConsumer())),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class MainAppProjectView extends StatelessWidget {
-  const MainAppProjectView({Key? key}) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return ResponsiveContainer(
-      tablet: Scaffold(
-        appBar: AppBar(),
-        body: GestureDetector(
-          onTap: () {
-            FocusManager.instance.primaryFocus?.unfocus();
-          },
-          child: ProjectDetail(),
-        ),
-      ),
-      mobile: Scaffold(
-        appBar: AppBar(),
-        body: GestureDetector(
-          onTap: () {
-            FocusManager.instance.primaryFocus?.unfocus();
-          },
-          child: ProjectDetail(),
-        ),
-      ),
-      desktop: Scaffold(
-        appBar: AppBar(),
-        body: GestureDetector(
-          onTap: () {
-            FocusManager.instance.primaryFocus?.unfocus();
-          },
-          child: ProjectDetail(),
-        ),
-      ),
-    );
-  }
-}
-
-final sideMenuProvider = StateNotifierProvider<SideMenuProvider, int>((ref) => SideMenuProvider());
-
-class FragmentConsumer extends ConsumerWidget {
-  const FragmentConsumer({Key? key}) : super(key: key);
+class WidgetMove extends ConsumerWidget {
+  final WidgetMoveDataModel widgetMove;
+  final VoidCallback refresh;
+  WidgetMove(this.widgetMove, this.refresh);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final menuItemProvider = ref.watch(sideMenuProvider);
-    return Container(
-      child: SideMenuViewModel().menuitems[menuItemProvider].menuWidget,
+    return Positioned(
+        top: widgetMove.offset.dy,
+        left: widgetMove.offset.dx,
+        child: Draggable(
+          childWhenDragging: Container(),
+          feedback: Container(
+            width: widgetMove.size.width,
+            height: widgetMove.size.height,
+            color: Colors.red,
+            // child: Center(child: Text("x: ${offset.dx.toString()}, y: ${offset.dy.toString()}")),
+          ),
+          onDragEnd: (delta) {
+            widgetMove.offset = delta.offset;
+            refresh();
+          },
+          child: Container(
+            width: widgetMove.size.width,
+            height: widgetMove.size.height,
+            color: Colors.red,
+            child: Stack(
+              children: [
+                Positioned.fill(child: Center(child: Text("x: ${widgetMove.offset.dx.toString()}, y: ${widgetMove.offset.dy.toString()}"))),
+                Positioned(
+                    bottom: -2,
+                    right: -2,
+                    child: Draggable(
+                      feedback: Container(
+                        height: 10,
+                        width: 10,
+                        color: Colors.blue,
+                      ),
+                      childWhenDragging: Container(
+                        height: 10,
+                        width: 10,
+                        color: Colors.blue,
+                      ),
+                      onDragEnd: (delta) {
+                        Offset offset = delta.offset - (widgetMove.offset);
+
+                        print("x: ${offset.dx.toString()}, y: ${offset.dy.toString()}");
+                        widgetMove.size = Size(offset.dx + 20, offset.dy + 20);
+                        refresh();
+                      },
+                      child: Container(
+                        height: 10,
+                        width: 10,
+                        color: Colors.blue,
+                      ),
+                    ))
+              ],
+            ),
+          ),
+        ));
+  }
+}
+
+class WidgetMoveDataModel {
+  Offset offset;
+  Size size = Size(100, 100);
+  WidgetMoveDataModel({
+    required this.offset,
+    Size? size,
+  }) {
+    size = size;
+  }
+}
+
+class WidgetMoveProvider extends ChangeNotifier {
+  List<WidgetMoveDataModel> noteWidgets = [];
+  List<WidgetMoveDataModel> tempWidgets = [];
+
+  WidgetMoveProvider() {
+    noteWidgets = [];
+    tempWidgets = [];
+  }
+
+  void backUpList() {
+    tempWidgets.clear();
+    for (int i = 0; i < noteWidgets.length; i++) {
+      tempWidgets.add(WidgetMoveDataModel(offset: noteWidgets[i].offset, size: noteWidgets[i].size));
+    }
+  }
+
+  void addNoteWidget() {
+    WidgetMoveDataModel newWidget = WidgetMoveDataModel(offset: Offset(20, 20));
+    noteWidgets.add(newWidget);
+    notifyListeners();
+  }
+
+  void horizontalArrange() {
+    backUpList();
+    double previousWidth = 0;
+    for (int i = 0; i < noteWidgets.length; i++) {
+      noteWidgets[i].offset = Offset(20 + previousWidth, 20);
+      previousWidth += noteWidgets[i].size.width + 20;
+    }
+    notifyListeners();
+  }
+
+  void verticalArrange() {
+    backUpList();
+    double previousHeight = 0;
+    for (int i = 0; i < noteWidgets.length; i++) {
+      noteWidgets[i].offset = Offset(20, 20 + previousHeight);
+      previousHeight += noteWidgets[i].size.height + 20;
+    }
+    notifyListeners();
+  }
+
+  void previousState() {
+    for (int i = 0; i < noteWidgets.length; i++) {
+      noteWidgets[i].offset = tempWidgets[i].offset;
+      noteWidgets[i].size = tempWidgets[i].size;
+    }
+    notifyListeners();
+  }
+
+  void clear() {
+    noteWidgets.clear();
+    tempWidgets.clear();
+    notifyListeners();
+  }
+
+  void refresh() {
+    print("refresh");
+    notifyListeners();
+  }
+}
+
+class MyAppState extends ConsumerWidget {
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    var provide = ref.watch(widgetMoveProvider);
+    return MaterialApp(
+      home: Scaffold(
+        body: Column(
+          children: [
+            Expanded(
+                flex: 9,
+                child: Stack(
+                    fit: StackFit.expand,
+                    children: provide.noteWidgets.map((e) => WidgetMove(e, ref.read(widgetMoveProvider).refresh)).toList())),
+            Flexible(
+                flex: 1,
+                child: Row(
+                  children: [
+                    MaterialButton(
+                      onPressed: () {
+                        ref.read(widgetMoveProvider).horizontalArrange();
+                      },
+                      child: Text("Horizontal"),
+                    ),
+                    MaterialButton(
+                      onPressed: () {
+                        ref.read(widgetMoveProvider).verticalArrange();
+                      },
+                      child: Text("Verticle"),
+                    ),
+                    MaterialButton(
+                      onPressed: () {
+                        ref.read(widgetMoveProvider).previousState();
+                      },
+                      child: Text("Previous State"),
+                    ),
+                    MaterialButton(
+                      onPressed: () {
+                        ref.read(widgetMoveProvider).clear();
+                      },
+                      child: Text("Clear"),
+                    ),
+                    MaterialButton(
+                      onPressed: () {
+                        ref.read(widgetMoveProvider).refresh();
+                      },
+                      child: Text("Refresh"),
+                    )
+                  ],
+                ))
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(onPressed: () {
+          provide.addNoteWidget();
+        }),
+      ),
     );
   }
+}
+
+class NoteData {
+  Uuid id;
+  String text;
+  NoteData({
+    required this.id,
+    required this.text,
+  });
+
+  NoteData copyWith({
+    Uuid? id,
+    String? text,
+  }) {
+    return NoteData(
+      id: id ?? this.id,
+      text: text ?? this.text,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'text': text,
+    };
+  }
+
+  factory NoteData.fromMap(Map<String, dynamic> map) {
+    return NoteData(
+      id: map['id'],
+      text: map['text'] ?? '',
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory NoteData.fromJson(String source) => NoteData.fromMap(json.decode(source));
+
+  @override
+  String toString() => 'NoteData(id: $id, text: $text)';
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is NoteData && other.id == id && other.text == text;
+  }
+
+  @override
+  int get hashCode => id.hashCode ^ text.hashCode;
 }
